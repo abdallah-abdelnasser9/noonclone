@@ -1,5 +1,31 @@
 <%- include('../partials/header') %>
 
+<style>
+    .product-thumbnail {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        transition: transform 0.2s ease;
+    }
+    .product-thumbnail:hover {
+        transform: scale(1.1);
+        border-color: #ffc107;
+    }
+    .no-image-small {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        border-radius: 8px;
+        color: #adb5bd;
+        font-size: 1.2rem;
+    }
+</style>
+
 <% if (typeof success !== 'undefined' && success) { %>
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="fas fa-check-circle me-2"></i><%= success %>
@@ -49,35 +75,76 @@
                         <% products.forEach(product => { %>
                             <tr>
                                 <td>
-                                    <img src="/uploads/products/<%= product.mainImage || 'default-product.png' %>" 
-                                         style="width: 50px; height: 50px; object-fit: cover;" class="rounded">
+                                    <% 
+                                        // Handle multiple image field possibilities
+                                        let productImage = null;
+                                        
+                                        if (product.mainImage && product.mainImage !== 'default-product.png' && product.mainImage !== '') {
+                                            productImage = product.mainImage;
+                                        } else if (product.images && product.images.length > 0 && product.images[0] !== 'default-product.png') {
+                                            productImage = product.images[0];
+                                        } else if (product.image && product.image !== 'default-product.png') {
+                                            productImage = product.image;
+                                        }
+                                        
+                                        if (productImage) {
+                                            const imgSrc = productImage.startsWith('http') 
+                                                ? productImage 
+                                                : '/uploads/products/' + productImage;
+                                    %>
+                                        <img src="<%= imgSrc %>" 
+                                             class="product-thumbnail"
+                                             alt="<%= product.name %>"
+                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        <div class="no-image-small" style="display: none;">
+                                            <i class="fas fa-image"></i>
+                                        </div>
+                                    <% } else { %>
+                                        <div class="no-image-small">
+                                            <i class="fas fa-image"></i>
+                                        </div>
+                                    <% } %>
                                 </td>
                                 <td><%= product.name %></td>
-                                <td><%= product.category ? product.category.name : 'N/A' %></td>
-                                <td>$<%= product.price.toFixed(2) %></td>
+                                <td><%= product.category ? (typeof product.category === 'object' ? product.category.name : product.category) : 'N/A' %></td>
+                                <td>$<%= (product.price || 0).toFixed(2) %></td>
                                 <td>
                                     <span class="badge bg-<%= product.stock > 10 ? 'success' : product.stock > 0 ? 'warning' : 'danger' %>">
-                                        <%= product.stock %>
+                                        <%= product.stock || 0 %>
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="badge bg-<%= product.isActive ? 'success' : 'secondary' %>">
-                                        <%= product.isActive ? 'Active' : 'Inactive' %>
+                                    <span class="badge bg-<%= product.isActive !== false ? 'success' : 'secondary' %>">
+                                        <%= product.isActive !== false ? 'Active' : 'Inactive' %>
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="/admin/products/<%= product._id %>" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
-                                    <a href="/admin/products/edit/<%= product._id %>" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
-                                    <form action="/admin/products/delete/<%= product._id %>" method="POST" style="display: inline;" 
-                                          onsubmit="return confirm('Delete this product?');">
-                                        <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                                    </form>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="/admin/products/<%= product._id %>" class="btn btn-info" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="/admin/products/edit/<%= product._id %>" class="btn btn-warning" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="/admin/products/delete/<%= product._id %>" method="POST" style="display: inline;" 
+                                              onsubmit="return confirm('Are you sure you want to delete this product?');">
+                                            <button type="submit" class="btn btn-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         <% }) %>
                     <% } else { %>
                         <tr>
-                            <td colspan="7" class="text-center py-4">No products found</td>
+                            <td colspan="7" class="text-center py-5">
+                                <i class="fas fa-box-open fa-3x text-muted mb-3 d-block"></i>
+                                <p class="text-muted">No products found</p>
+                                <a href="/admin/products/create" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Add First Product
+                                </a>
+                            </td>
                         </tr>
                     <% } %>
                 </tbody>
@@ -87,9 +154,25 @@
         <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
             <nav>
                 <ul class="pagination justify-content-center">
+                    <% if (currentPage > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage - 1 %><%= search ? '&search=' + search : '' %>">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                    <% } %>
+                    
                     <% for (let i = 1; i <= totalPages; i++) { %>
                         <li class="page-item <%= currentPage === i ? 'active' : '' %>">
                             <a class="page-link" href="?page=<%= i %><%= search ? '&search=' + search : '' %>"><%= i %></a>
+                        </li>
+                    <% } %>
+                    
+                    <% if (currentPage < totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage + 1 %><%= search ? '&search=' + search : '' %>">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
                         </li>
                     <% } %>
                 </ul>
@@ -97,5 +180,20 @@
         <% } %>
     </div>
 </div>
+
+<script>
+// Add image error handling for all product images
+document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('.product-thumbnail');
+    images.forEach(img => {
+        img.addEventListener('error', function() {
+            this.style.display = 'none';
+            if (this.nextElementSibling && this.nextElementSibling.classList.contains('no-image-small')) {
+                this.nextElementSibling.style.display = 'flex';
+            }
+        });
+    });
+});
+</script>
 
 <%- include('../partials/footer') %>
