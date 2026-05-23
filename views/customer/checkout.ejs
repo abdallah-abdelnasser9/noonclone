@@ -1,0 +1,235 @@
+<%- include('../partials/header') %>
+
+<div class="container my-5">
+    <h1 class="mb-4">Checkout</h1>
+    
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Shipping Information</h5>
+                    <form id="checkoutForm">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Street Address</label>
+                                <input type="text" class="form-control" name="address[street]" required value="<%= user.address?.street || '' %>">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-control" name="address[city]" required value="<%= user.address?.city || '' %>">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">State</label>
+                                <input type="text" class="form-control" name="address[state]" required value="<%= user.address?.state || '' %>">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">ZIP Code</label>
+                                <input type="text" class="form-control" name="address[zipCode]" required value="<%= user.address?.zipCode || '' %>">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Country</label>
+                                <input type="text" class="form-control" name="address[country]" required value="<%= user.address?.country || 'USA' %>">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Payment Method</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="payment-method-card border rounded p-3" data-method="Cash on Delivery">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" value="Cash on Delivery" id="cod">
+                                    <label class="form-check-label" for="cod">
+                                        <i class="fas fa-money-bill-wave fa-2x text-success"></i>
+                                        <strong>Cash on Delivery</strong>
+                                        <p class="small text-muted mb-0">Pay when you receive the order</p>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="payment-method-card border rounded p-3" data-method="Fake Credit Card">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" value="Fake Credit Card" id="credit">
+                                    <label class="form-check-label" for="credit">
+                                        <i class="fas fa-credit-card fa-2x text-primary"></i>
+                                        <strong>Credit Card (Demo)</strong>
+                                        <p class="small text-muted mb-0">Simulated payment</p>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="payment-method-card border rounded p-3" data-method="Wallet Balance">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" value="Wallet Balance" id="wallet">
+                                    <label class="form-check-label" for="wallet">
+                                        <i class="fas fa-wallet fa-2x text-info"></i>
+                                        <strong>Wallet Balance</strong>
+                                        <p class="small text-muted mb-0">Use your wallet (Demo)</p>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="creditCardForm" style="display: none;" class="mt-4">
+                        <h6>Demo Credit Card Details</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Card Number (Demo: 4242 4242 4242 4242)</label>
+                                <input type="text" class="form-control" id="cardNumber" placeholder="4242 4242 4242 4242">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Card Holder Name</label>
+                                <input type="text" class="form-control" id="cardName" placeholder="John Doe">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Expiry Date</label>
+                                <input type="text" class="form-control" id="expiry" placeholder="MM/YY">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">CVV</label>
+                                <input type="password" class="form-control" id="cvv" placeholder="123">
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> This is a demo payment. No real charges will be made.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Order Summary</h5>
+                    <div class="cart-items mb-3">
+                        <% cart.forEach(item => { %>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span><%= item.title %> x <%= item.quantity %></span>
+                                <span>$<%= (item.price * item.quantity).toFixed(2) %></span>
+                            </div>
+                        <% }) %>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>$<%= subtotal.toFixed(2) %></span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span>$<%= shipping.toFixed(2) %></span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong class="text-danger fs-4">$<%= total.toFixed(2) %></strong>
+                    </div>
+                    <button type="button" class="btn btn-warning w-100 btn-lg" onclick="placeOrder()">
+                        <i class="fas fa-check-circle"></i> Place Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Payment method selection
+document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const creditCardForm = document.getElementById('creditCardForm');
+        if (this.value === 'Fake Credit Card') {
+            creditCardForm.style.display = 'block';
+        } else {
+            creditCardForm.style.display = 'none';
+        }
+    });
+});
+
+// Select payment method cards
+document.querySelectorAll('.payment-method-card').forEach(card => {
+    card.addEventListener('click', function() {
+        const radio = this.querySelector('input[type="radio"]');
+        radio.checked = true;
+        
+        // Trigger change event
+        const event = new Event('change');
+        radio.dispatchEvent(event);
+    });
+});
+
+async function placeOrder() {
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+    if (!paymentMethod) {
+        alert('Please select a payment method');
+        return;
+    }
+    
+    // Get address form data
+    const formData = new FormData(document.getElementById('checkoutForm'));
+    const address = {
+        street: formData.get('address[street]'),
+        city: formData.get('address[city]'),
+        state: formData.get('address[state]'),
+        zipCode: formData.get('address[zipCode]'),
+        country: formData.get('address[country]')
+    };
+    
+    // Validate address
+    for (let key in address) {
+        if (!address[key]) {
+            alert('Please fill in all address fields');
+            return;
+        }
+    }
+    
+    const orderData = {
+        paymentMethod: paymentMethod.value,
+        address: address,
+        cardNumber: document.getElementById('cardNumber')?.value || '',
+        cardName: document.getElementById('cardName')?.value || '',
+        expiryDate: document.getElementById('expiry')?.value || '',
+        cvv: document.getElementById('cvv')?.value || ''
+    };
+    
+    try {
+        const response = await fetch('/orders/place', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(orderData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            window.location.href = `/orders/${result.orderId}`;
+        } else {
+            alert(result.message || 'Error placing order');
+        }
+    } catch (error) {
+        alert('Error placing order. Please try again.');
+    }
+}
+</script>
+
+<style>
+.payment-method-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.payment-method-card:hover {
+    border-color: #ffc107;
+    background-color: #fff9e6;
+}
+</style>
+
+<%- include('../partials/footer') %>

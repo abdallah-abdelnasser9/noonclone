@@ -1,0 +1,67 @@
+<%- include('../partials/header') %>
+
+<div class="container my-5">
+    <h1 class="mb-4">My Wishlist</h1>
+    
+    <% if (wishlist && wishlist.length > 0) { %>
+        <div class="row">
+            <% wishlist.forEach(item => { %>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card product-card h-100 shadow-sm">
+                        <img src="/uploads/<%= item.product.images && item.product.images[0] ? item.product.images[0] : 'default-product.jpg' %>" 
+                             class="card-img-top" 
+                             alt="<%= item.product.title %>"
+                             style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h6 class="card-title"><%= item.product.title %></h6>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <% if (item.product.discountPrice && item.product.discountPrice > 0) { %>
+                                        <span class="text-muted text-decoration-line-through">$<%= item.product.price %></span>
+                                        <span class="text-danger fw-bold">$<%= item.product.discountPrice %></span>
+                                    <% } else { %>
+                                        <span class="fw-bold">$<%= item.product.price %></span>
+                                    <% } %>
+                                </div>
+                                <button class="btn btn-warning btn-sm add-to-cart" data-id="<%= item.product._id %>">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-0">
+                            <a href="/products/<%= item.product._id %>" class="btn btn-outline-dark w-100 btn-sm">View Details</a>
+                            <button class="btn btn-outline-danger btn-sm w-100 mt-2 remove-wishlist" data-id="<%= item.product._id %>">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <div class="text-center py-5">
+            <i class="fas fa-heart-broken fa-4x text-muted mb-3"></i>
+            <h3>Your wishlist is empty</h3>
+            <p>Browse products and add your favorites to wishlist</p>
+            <a href="/products/shop" class="btn btn-warning">Browse Products</a>
+        </div>
+    <% } %>
+</div>
+
+<script>
+document.querySelectorAll('.remove-wishlist').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        const productId = this.dataset.id;
+        if (confirm('Remove from wishlist?')) {
+            const response = await fetch(`/user/wishlist/remove/${productId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                location.reload();
+            }
+        }
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

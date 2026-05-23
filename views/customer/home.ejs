@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>NoonClone • Premium Shopping</title>
+  <!-- Bootstrap 5 + Font Awesome 6 + Google Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f9fafb;
+      transition: background 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
+    }
+    /* smooth animations */
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0px); }
+    }
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.5); }
+      70% { box-shadow: 0 0 0 15px rgba(255, 193, 7, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+    }
+    .animate-fade-in {
+      animation: fadeInUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+    /* hero banner */
+    .hero-banner {
+      background: linear-gradient(105deg, #1e1e2f 0%, #2d2d44 100%);
+      padding: 6rem 0 5rem;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 3px solid #ffc107;
+      transition: background 0.4s;
+    }
+    .hero-banner::before {
+      content: "";
+      position: absolute;
+      top: -40%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(255,193,7,0.18) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: float 6s infinite ease-in-out;
+    }
+    .hero-banner h1 {
+      color: white;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .hero-banner .lead {
+      color: rgba(255,255,255,0.85);
+      font-size: 1.2rem;
+      max-width: 500px;
+    }
+    .btn-dark-premium {
+      background: #ffc107;
+      border: none;
+      color: #0a0a0a;
+      font-weight: 600;
+      padding: 0.8rem 2.2rem;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 18px rgba(255,193,7,0.4);
+      letter-spacing: 0.3px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-dark-premium:hover {
+      background: #e6a800;
+      transform: translateY(-3px);
+      box-shadow: 0 15px 25px rgba(255,193,7,0.5);
+      color: #000;
+    }
+    /* product cards */
+    .product-card {
+      border-radius: 20px;
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.03);
+      transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1);
+      overflow: hidden;
+    }
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 35px -10px rgba(0,0,0,0.15);
+      border-color: rgba(255,193,7,0.4);
+    }
+    .image-wrapper {
+      height: 220px;
+      background: #f5f7fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .image-wrapper img {
+      transition: transform 0.5s ease;
+    }
+    .product-card:hover .image-wrapper img {
+      transform: scale(1.07);
+    }
+    .wishlist-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(6px);
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+      transition: 0.25s ease;
+      opacity: 0;
+      transform: scale(0.9);
+      cursor: pointer;
+      z-index: 5;
+    }
+    .product-card:hover .wishlist-btn {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .wishlist-btn:hover {
+      background: white;
+      box-shadow: 0 10px 18px rgba(220,53,69,0.3);
+    }
+    .wishlist-btn.active i {
+      font-weight: 900;
+      color: #dc3545;
+    }
+    .add-to-cart-btn {
+      border-radius: 40px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      transition: 0.25s;
+      background: #ffc107;
+      border: none;
+      color: #0a0a0a;
+      padding: 0.4rem 1.1rem;
+    }
+    .add-to-cart-btn:hover {
+      background: #e0a800;
+      box-shadow: 0 8px 16px rgba(255,193,7,0.4);
+      transform: scale(1.02);
+    }
+    /* category cards */
+    .category-section {
+      background: #ffffff;
+      border-top: 1px solid rgba(0,0,0,0.04);
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+      transition: background 0.3s;
+    }
+    .category-card {
+      background: #f8fafc;
+      border-radius: 28px;
+      padding: 2rem 1rem;
+      transition: all 0.35s ease;
+      border: 1px solid transparent;
+      display: block;
+    }
+    .category-card:hover {
+      background: white;
+      border-color: #ffc107;
+      box-shadow: 0 22px 30px -12px rgba(0,0,0,0.12);
+      transform: translateY(-6px);
+    }
+    .category-card i {
+      transition: transform 0.3s;
+    }
+    .category-card:hover i {
+      transform: scale(1.15) rotate(-2deg);
+    }
+    .category-text {
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 1.1rem;
+      margin-top: 0.5rem;
+    }
+    /* toast enhancement */
+    .toast {
+      backdrop-filter: blur(12px);
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+      border-radius: 18px;
+    }
+    .dark-mode .toast {
+      background: rgba(30,30,40,0.9);
+      color: #f0f0f0;
+    }
+    /* dark mode styles */
+    body.dark-mode {
+      background: #121218;
+      color: #eaeaea;
+    }
+    .dark-mode .hero-banner {
+      background: linear-gradient(105deg, #1e1e2f 0%, #2c2c3a 100%);
+    }
+    .dark-mode .product-card {
+      background: #1e1e2a;
+      border-color: #2a2a38;
+      color: #f0f0f0;
+    }
+    .dark-mode .image-wrapper {
+      background: #2a2a36;
+    }
+    .dark-mode .category-section {
+      background: #18181f;
+      border-color: #2a2a35;
+    }
+    .dark-mode .category-card {
+      background: #23232e;
+    }
+    .dark-mode .category-text {
+      color: #f5f5f5;
+    }
+    .dark-mode .text-muted {
+      color: #b0b0c0 !important;
+    }
+    .dark-mode .card-body {
+      color: #e0e0e0;
+    }
+    .dark-mode .btn-outline-warning {
+      border-color: #ffc107;
+      color: #ffc107;
+    }
+    .dark-mode .btn-outline-warning:hover {
+      background: #ffc107;
+      color: #000;
+    }
+    .dark-mode .add-to-cart-btn {
+      background: #ffc107;
+      color: #000;
+    }
+    /* Dark mode - Make Explore Shop button white/visible */
+    .dark-mode .btn-dark-premium {
+      background: #ffffffad;
+      color: #000000;
+      box-shadow: 0 8px 18px rgba(255,255,255,0.3);
+      border: 2px solid #ffc107;
+    }
+    .dark-mode .btn-dark-premium:hover {
+      background: #ca9803;
+      color: #000000;
+      box-shadow: 0 15px 25px rgba(255,193,7,0.6);
+      border-color: #ffc107;
+    }
+    @media (max-width: 768px) {
+      .hero-banner {
+        padding: 3.5rem 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Toast Container -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
+    <div id="cartToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body d-flex align-items-center gap-3 fw-semibold" id="toastMessage">
+          <i id="toastIcon" class="fas fa-check-circle text-success fs-5"></i>
+          <span id="toastText">Product added successfully!</span>
+        </div>
+        <button type="button" class="btn-close btn-close-dark me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header partial (simulated as include) -->
+  <%- include('../partials/header') %>
+
+  <!-- Hero Banner -->
+  <div class="hero-banner animate-fade-in">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h1 class="display-4 fw-bold mb-3">NoonClone <span style="color:#ffc107;">Premium</span></h1>
+          <p class="lead mb-4">Discover curated products with lightning-fast delivery. Electronics, fashion, home essentials – redefined.</p>
+          <a href="/products/shop" class="btn btn-dark-premium btn-lg"><i class="fas fa-bolt me-2"></i>Explore Shop</a>
+        </div>
+        <div class="col-md-6 d-none d-md-block text-end">
+          <i class="fas fa-shopping-bag text-warning" style="font-size: 8rem; opacity: 0.5; filter: drop-shadow(0 0 20px #b88b05);"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured Products -->
+  <div class="container my-5 pt-3">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <h2 class="fw-bold mb-0"><i class="fas fa-star text-warning me-2"></i>Featured Products</h2>
+      <a href="/products/shop" class="text-decoration-none text-warning fw-semibold">View All <i class="fas fa-arrow-right ms-1"></i></a>
+    </div>
+    <div class="row">
+      <% if (featuredProducts && featuredProducts.length > 0) { %>
+        <% featuredProducts.forEach((product, index) => { %>
+          <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card product-card h-100 shadow-sm">
+              <div class="image-wrapper">
+                <% if (product.mainImage && product.mainImage !== 'default-product.png') { %>
+                  <img src="<%= product.mainImage.startsWith('http') ? product.mainImage : '/uploads/products/' + product.mainImage %>" 
+                       alt="<%= product.name %>" style="width:100%; height:100%; object-fit:cover;"
+                       onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+                <% } else { %>
+                  <span style="color:#888;">No Image</span>
+                <% } %>
+                <button class="wishlist-btn" data-id="<%= product._id %>" title="Add to Wishlist">
+                  <i class="far fa-heart text-danger fs-5"></i>
+                </button>
+              </div>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-semibold"><%= product.name %></h5>
+                <p class="card-text text-muted small flex-grow-1"><%= product.description ? product.description.substring(0, 80) + '...' : 'Premium quality product' %></p>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                  <span class="fw-bold text-warning fs-5">$<%= product.price.toFixed(2) %></span>
+                  <button class="btn add-to-cart-btn btn-sm" data-id="<%= product._id %>">
+                    <i class="fas fa-cart-plus me-1"></i>Add
+                  </button>
+                </div>
+              </div>
+              <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-3">
+                <a href="/products/<%= product._id %>" class="btn btn-outline-warning btn-sm w-100 rounded-pill">View Details</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="col-12 text-center py-5">
+          <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+          <h4 class="fw-semibold">No featured products yet</h4>
+          <a href="/products/shop" class="btn btn-warning mt-2 rounded-pill px-4">Browse Shop</a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Categories -->
+  <div class="py-5 category-section">
+    <div class="container">
+      <h2 class="text-center fw-bold mb-5"><i class="fas fa-th-large text-warning me-2"></i>Shop by Category</h2>
+      <div class="row g-4 text-center">
+        <div class="col-md-3 col-6">
+          <a href="/products/shop?category=Electronics" class="text-decoration-none">
+            <div class="category-card shadow-sm">
+              <i class="fas fa-mobile-alt fa-3x text-warning"></i>
+              <p class="category-text">Electronics</p>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-3 col-6">
+          <a href="/products/shop?category=Clothing" class="text-decoration-none">
+            <div class="category-card shadow-sm">
+              <i class="fas fa-tshirt fa-3x text-warning"></i>
+              <p class="category-text">Clothing</p>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-3 col-6">
+          <a href="/products/shop?category=Books" class="text-decoration-none">
+            <div class="category-card shadow-sm">
+              <i class="fas fa-book fa-3x text-warning"></i>
+              <p class="category-text">Books</p>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-3 col-6">
+          <a href="/products/shop?category=Sports" class="text-decoration-none">
+            <div class="category-card shadow-sm">
+              <i class="fas fa-running fa-3x text-warning"></i>
+              <p class="category-text">Sports</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+  <!-- Bootstrap JS + custom interactive scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function() {
+      // Professional toast handler
+      function showToast(message, type = 'success') {
+        const toastEl = document.getElementById('cartToast');
+        const toastText = document.getElementById('toastText');
+        const toastIcon = document.getElementById('toastIcon');
+        if (!toastEl || !toastText || !toastIcon) return;
+        
+        // Reset classes & icon
+        toastIcon.className = 'fas fa-check-circle fs-5 me-1';
+        let iconClass = 'fa-check-circle text-success';
+        
+        switch(type) {
+          case 'success':
+            iconClass = 'fa-check-circle text-success';
+            break;
+          case 'error':
+            iconClass = 'fa-exclamation-circle text-danger';
+            break;
+          case 'warning':
+            iconClass = 'fa-exclamation-triangle text-warning';
+            break;
+          case 'wishlist':
+            iconClass = 'fa-heart text-danger';
+            break;
+          default: iconClass = 'fa-info-circle text-primary';
+        }
+        toastIcon.className = `fas ${iconClass} fs-5 me-2`;
+        toastText.textContent = message;
+        
+        const toast = new bootstrap.Toast(toastEl, { delay: 3200, animation: true });
+        toast.show();
+      }
+
+      // Add to cart logic
+      document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const productId = this.getAttribute('data-id');
+          const originalHTML = this.innerHTML;
+          this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Adding';
+          this.disabled = true;
+          
+          fetch('/cart/add/' + productId, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          })
+          .then(res => res.json())
+          .then(data => {
+            this.innerHTML = originalHTML;
+            this.disabled = false;
+            if (data.success) {
+              showToast(data.message || 'Added to cart!', 'success');
+              const cartBadge = document.querySelector('.cart-count');
+              if (cartBadge && data.cartCount) cartBadge.textContent = data.cartCount;
+            } else {
+              showToast(data.message || 'Could not add item', 'error');
+            }
+          })
+          .catch(() => {
+            this.innerHTML = originalHTML;
+            this.disabled = false;
+            showToast('Please login to continue', 'warning');
+          });
+        });
+      });
+
+      // Wishlist heart toggle
+      document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          const productId = this.getAttribute('data-id');
+          const heartIcon = this.querySelector('i');
+          
+          fetch('/user/wishlist/add/' + productId, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              heartIcon.className = 'fas fa-heart text-danger';
+              this.classList.add('active');
+              showToast(data.message || 'Added to wishlist', 'wishlist');
+            } else {
+              showToast(data.message || 'Already in wishlist', 'warning');
+            }
+          })
+          .catch(() => {
+            showToast('Login to manage wishlist', 'warning');
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<%- include('../partials/header') %>
+
+<div class="container my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/orders">My Orders</a></li>
+            <li class="breadcrumb-item active">Order #<%= order._id.toString().slice(-8) %></li>
+        </ol>
+    </nav>
+
+    <!-- Success/Error Messages -->
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i><%= success %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <!-- Order Status Banner -->
+    <div class="order-status-banner mb-4">
+        <div class="d-flex align-items-center justify-content-between flex-wrap">
+            <div>
+                <h4 class="mb-1">Order #<%= order._id.toString().slice(-8) %></h4>
+                <p class="mb-0 text-muted">
+                    Placed on <%= order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-US', { 
+                        year: 'numeric', month: 'long', day: 'numeric' 
+                    }) : 'N/A' %>
+                </p>
+            </div>
+            <div class="text-end">
+                <span class="status-badge badge bg-<%= order.status === 'delivered' ? 'success' : order.status === 'cancelled' ? 'danger' : order.status === 'shipped' ? 'primary' : order.status === 'processing' ? 'info' : 'warning' %> fs-6">
+                    <i class="fas fa-<%= order.status === 'delivered' ? 'check-circle' : order.status === 'cancelled' ? 'times-circle' : order.status === 'shipped' ? 'truck' : order.status === 'processing' ? 'cog' : 'clock' %> me-1"></i>
+                    <%= order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : 'Pending' %>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Order Items -->
+        <div class="col-md-8">
+            <div class="card order-card mb-4">
+                <div class="card-header order-card-header">
+                    <h5 class="mb-0"><i class="fas fa-box me-2 text-warning"></i>Order Items</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table order-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (order.items && order.items.length > 0) { %>
+                                    <% order.items.forEach(item => { %>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="order-product-icon me-2">
+                                                        <i class="fas fa-box text-warning"></i>
+                                                    </div>
+                                                    <div>
+                                                        <span class="fw-bold"><%= item.product ? item.product.name : 'Product' %></span>
+                                                        <% if (item.product && item.product.category) { %>
+                                                            <br><small class="text-muted"><%= item.product.category.name %></small>
+                                                        <% } %>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>$<%= item.price ? item.price.toFixed(2) : '0.00' %></td>
+                                            <td><span class="badge bg-secondary"><%= item.quantity %></span></td>
+                                            <td class="fw-bold">$<%= (item.price * item.quantity).toFixed(2) %></td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">No items in this order</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-warning">
+                                    <td colspan="3" class="text-end"><strong>Total Amount:</strong></td>
+                                    <td><strong class="h5 text-warning">$<%= (order.totalAmount || 0).toLocaleString() %></strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Details Sidebar -->
+        <div class="col-md-4">
+            <!-- Order Info -->
+            <div class="card order-card mb-4">
+                <div class="card-header order-card-header">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2 text-warning"></i>Order Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="order-detail-item">
+                        <span class="text-muted">Order ID</span>
+                        <strong>#<%= order._id.toString().slice(-8) %></strong>
+                    </div>
+                    <div class="order-detail-item">
+                        <span class="text-muted">Date</span>
+                        <strong><%= order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A' %></strong>
+                    </div>
+                    <div class="order-detail-item">
+                        <span class="text-muted">Status</span>
+                        <span class="badge bg-<%= order.status === 'delivered' ? 'success' : order.status === 'cancelled' ? 'danger' : 'warning' %>">
+                            <%= order.status || 'pending' %>
+                        </span>
+                    </div>
+                    <div class="order-detail-item">
+                        <span class="text-muted">Payment Method</span>
+                        <strong>
+                            <% if (order.paymentMethod === 'cash_on_delivery') { %>
+                                <i class="fas fa-hand-holding-usd me-1 text-success"></i>Cash on Delivery
+                            <% } else if (order.paymentMethod === 'credit_card') { %>
+                                <i class="fas fa-credit-card me-1 text-primary"></i>Credit Card
+                            <% } else if (order.paymentMethod === 'paypal') { %>
+                                <i class="fab fa-paypal me-1 text-info"></i>PayPal
+                            <% } else { %>
+                                <%= order.paymentMethod || 'N/A' %>
+                            <% } %>
+                        </strong>
+                    </div>
+                    <div class="order-detail-item">
+                        <span class="text-muted">Payment Status</span>
+                        <span class="badge bg-<%= order.paymentStatus === 'completed' ? 'success' : order.paymentStatus === 'failed' ? 'danger' : 'warning' %>">
+                            <%= order.paymentStatus || 'pending' %>
+                        </span>
+                    </div>
+                    <% if (order.trackingNumber) { %>
+                        <div class="order-detail-item">
+                            <span class="text-muted">Tracking Number</span>
+                            <strong class="text-primary"><%= order.trackingNumber %></strong>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Shipping Address -->
+            <div class="card order-card mb-4">
+                <div class="card-header order-card-header">
+                    <h6 class="mb-0"><i class="fas fa-map-marker-alt me-2 text-warning"></i>Shipping Address</h6>
+                </div>
+                <div class="card-body">
+                    <% if (order.shippingAddress && order.shippingAddress.street) { %>
+                        <div class="address-box">
+                            <i class="fas fa-home text-warning mb-2"></i>
+                            <p class="mb-1 fw-bold"><%= order.shippingAddress.street %></p>
+                            <p class="mb-1"><%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> <%= order.shippingAddress.zipCode %></p>
+                            <p class="mb-0"><%= order.shippingAddress.country %></p>
+                        </div>
+                    <% } else { %>
+                        <p class="text-muted text-center mb-0">
+                            <i class="fas fa-map-marker-slash fa-2x mb-2 d-block"></i>
+                            No address provided
+                        </p>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-grid gap-2">
+                <a href="/orders" class="btn btn-outline-warning">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Orders
+                </a>
+                <a href="/products/shop" class="btn btn-warning">
+                    <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .order-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        background-color: #ffffff;
+    }
+    
+    .order-card-header {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #ffc107;
+        padding: 15px 20px;
+    }
+    
+    .order-status-banner {
+        background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
+        border: 2px solid #ffc107;
+        border-radius: 15px;
+        padding: 20px 25px;
+    }
+    
+    .status-badge {
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 25px;
+    }
+    
+    .order-table th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+    }
+    
+    .order-table td {
+        vertical-align: middle;
+        padding: 15px;
+    }
+    
+    .order-table tfoot tr td {
+        font-size: 16px;
+    }
+    
+    .order-product-icon {
+        width: 40px;
+        height: 40px;
+        background-color: #fff9e6;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .order-detail-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .order-detail-item:last-child {
+        border-bottom: none;
+    }
+    
+    .address-box {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+    }
+    
+    /* Dark Mode */
+    .dark-mode .order-card {
+        background-color: #2d2d2d;
+        color: #ffffff;
+    }
+    
+    .dark-mode .order-card-header {
+        background-color: #1a1a1a;
+    }
+    
+    .dark-mode .order-status-banner {
+        background: linear-gradient(135deg, #3d2d00 0%, #2d2d2d 100%);
+        border-color: #ffc107;
+        color: #ffffff;
+    }
+    
+    .dark-mode .order-table {
+        color: #ffffff;
+    }
+    
+    .dark-mode .order-table th {
+        background-color: #1a1a1a;
+        color: #ffffff;
+        border-bottom-color: #555;
+    }
+    
+    .dark-mode .order-table td {
+        border-color: #444;
+    }
+    
+    .dark-mode .order-table tbody tr:hover {
+        background-color: #3d3d3d;
+    }
+    
+    .dark-mode .order-product-icon {
+        background-color: #3d2d00;
+    }
+    
+    .dark-mode .order-detail-item {
+        border-bottom-color: #444;
+    }
+    
+    .dark-mode .address-box {
+        background-color: #1a1a1a;
+    }
+    
+    .dark-mode .breadcrumb {
+        background-color: transparent;
+    }
+    
+    .dark-mode .breadcrumb-item a {
+        color: #ffc107;
+    }
+    
+    .dark-mode .breadcrumb-item.active {
+        color: #aaa;
+    }
+    
+    .dark-mode .text-muted {
+        color: #aaaaaa !important;
+    }
+    
+    .dark-mode .table-warning {
+        background-color: #3d2d00 !important;
+        color: #ffffff !important;
+    }
+    
+    .dark-mode .table-warning td {
+        border-color: #555 !important;
+    }
+</style>
+
+<%- include('../partials/footer') %>

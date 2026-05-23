@@ -1,0 +1,110 @@
+<%- include('../partials/header') %>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/orders">My Orders</a></li>
+                    <li class="breadcrumb-item active">Order #<%= order._id.toString().slice(-8) %></li>
+                </ol>
+            </nav>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Order Confirmed!</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Order Information</h5>
+                            <p><strong>Order ID:</strong> <%= order._id %></p>
+                            <p><strong>Date:</strong> <%= new Date(order.createdAt).toLocaleString() %></p>
+                            <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                            <p><strong>Payment Status:</strong> 
+                                <span class="badge <%= order.paymentStatus === 'Paid' ? 'bg-success' : 'bg-warning' %>">
+                                    <%= order.paymentStatus %>
+                                </span>
+                            </p>
+                            <p><strong>Order Status:</strong> 
+                                <span class="badge <%= order.orderStatus === 'Delivered' ? 'bg-success' : (order.orderStatus === 'Cancelled' ? 'bg-danger' : 'bg-info') %>">
+                                    <%= order.orderStatus %>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Shipping Address</h5>
+                            <p>
+                                <%= order.shippingAddress.street %><br>
+                                <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> <%= order.shippingAddress.zipCode %><br>
+                                <%= order.shippingAddress.country %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Order Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% order.products.forEach(product => { %>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="/uploads/<%= product.image || 'default-product.jpg' %>" 
+                                                     style="width: 60px; height: 60px; object-fit: cover;" 
+                                                     class="rounded me-3">
+                                                <%= product.title %>
+                                            </div>
+                                        </td>
+                                        <td>$<%= product.price.toFixed(2) %></td>
+                                        <td><%= product.quantity %></td>
+                                        <td>$<%= (product.price * product.quantity).toFixed(2) %></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                                    <td>$<%= (order.totalPrice - (order.totalPrice > 500 ? 0 : 50)).toFixed(2) %></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Shipping:</strong></td>
+                                    <td>$<%= order.totalPrice > 500 ? 0 : 50 %></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td><strong class="text-danger fs-5">$<%= order.totalPrice.toFixed(2) %></strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="/products/shop" class="btn btn-warning">
+                            <i class="fas fa-shopping-cart"></i> Continue Shopping
+                        </a>
+                        <a href="/orders" class="btn btn-outline-secondary ms-2">
+                            <i class="fas fa-list"></i> View All Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

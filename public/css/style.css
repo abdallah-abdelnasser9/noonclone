@@ -1,0 +1,218 @@
+/* Custom CSS for Noon Clone */
+:root {
+    --primary-color: #ffc107;
+    --dark-color: #212529;
+    --light-color: #f8f9fa;
+    --danger-color: #dc3545;
+    --success-color: #28a745;
+}
+
+/* Dark Mode Styles */
+.dark-mode {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.dark-mode .card,
+.dark-mode .navbar,
+.dark-mode .footer {
+    background-color: #2d2d2d !important;
+    color: #ffffff !important;
+}
+
+.dark-mode .text-muted {
+    color: #aaaaaa !important;
+}
+
+/* Hero Banner */
+.hero-banner {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+}
+
+/* Product Cards */
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.product-card img {
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Category Cards */
+.category-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Cart Items */
+.cart-item {
+    transition: background-color 0.3s ease;
+}
+
+.cart-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Rating Stars */
+.rating {
+    color: #ffc107;
+    font-size: 1.2rem;
+}
+
+/* Loading Spinner */
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.spinner-overlay.active {
+    display: flex;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-banner h1 {
+        font-size: 2rem;
+    }
+    
+    .product-card {
+        margin-bottom: 1rem;
+    }
+    
+    .category-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ffc107;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ff9800;
+}
+
+/* Admin Dashboard Cards */
+.stat-card {
+    border-left: 4px solid #ffc107;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Payment Form */
+.payment-method-card {
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.payment-method-card.selected {
+    border-color: #ffc107;
+    background-color: #fff9e6;
+}
+
+/* Toast Notifications */
+.toast {
+    backdrop-filter: blur(10px);
+    background-color: rgba(255,255,255,0.95);
+}
+
+/* Buttons */
+.btn-warning {
+    transition: all 0.3s ease;
+}
+
+.btn-warning:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(255,193,7,0.3);
+}
+
+/* Checkout Summary */
+.checkout-summary {
+    background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.dark-mode {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.dark-mode .card,
+.dark-mode .navbar,
+.dark-mode .bg-light,
+.dark-mode .bg-white,
+.dark-mode [class*="bg-white"] {
+    background-color: #2d2d2d !important;
+    color: #ffffff !important;
+}
+
+.dark-mode .text-muted {
+    color: #aaaaaa !important;
+}
+
+.dark-mode .btn-outline-dark {
+    color: #ffffff;
+    border-color: #ffffff;
+}
+
+.dark-mode .btn-outline-dark:hover {
+    background-color: #ffffff;
+    color: #000000;
+}

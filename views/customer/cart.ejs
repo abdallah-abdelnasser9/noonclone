@@ -1,0 +1,187 @@
+<%- include('../partials/header') %>
+
+<div class="container my-5">
+    <h1 class="mb-4"><i class="fas fa-shopping-cart me-2"></i>Shopping Cart</h1>
+    
+    <% if (cart && cart.length > 0) { %>
+        <div class="row">
+            <div class="col-md-8">
+                <% cart.forEach((item, index) => { %>
+                    <div class="card mb-3 shadow-sm">
+                        <div class="row g-0 align-items-center">
+                            <div class="col-md-3">
+                                <div style="height: 150px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
+    <% 
+    let imgSrc = 'https://via.placeholder.com/300x150?text=No+Image';
+    if (item.product && item.product.mainImage) {
+        imgSrc = item.product.mainImage.startsWith('http') ? 
+            item.product.mainImage : 
+            '/uploads/products/' + item.product.mainImage;
+    } else if (item.image) {
+        imgSrc = item.image.startsWith('http') ? 
+            item.image : 
+            '/uploads/products/' + item.image;
+    }
+    %>
+    <img src="<%= imgSrc %>" 
+         class="img-fluid" 
+         style="height: 150px; width: 100%; object-fit: cover;"
+         alt="<%= item.product ? item.product.name : item.name || 'Product' %>"
+         onerror="this.src='https://via.placeholder.com/300x150?text=No+Image'">
+</div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="card-title mb-1">
+                                                <a href="/products/<%= item.product ? item.product._id : '#' %>" class="text-decoration-none text-dark">
+                                                    <%= item.product ? item.product.name : 'Product' %>
+                                                </a>
+                                            </h5>
+                                            <p class="text-muted small mb-2">
+                                                <%= item.product && item.product.category ? item.product.category.name : '' %>
+                                            </p>
+                                            <p class="fw-bold text-warning mb-0">$<%= (item.price || 0).toFixed(2) %></p>
+                                        </div>
+                                        <button class="btn btn-outline-danger btn-sm remove-item" data-id="<%= item.product ? item.product._id : item.productId %>">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="input-group input-group-sm" style="width: 130px;">
+                                            <button class="btn btn-outline-secondary decrease-qty" data-id="<%= item.product ? item.product._id : item.productId %>" type="button">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <input type="text" class="form-control text-center qty-input" 
+                                                   value="<%= item.quantity %>" 
+                                                   data-id="<%= item.product ? item.product._id : item.productId %>" 
+                                                   readonly>
+                                            <button class="btn btn-outline-secondary increase-qty" data-id="<%= item.product ? item.product._id : item.productId %>" type="button">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                        <span class="fw-bold">
+                                            Subtotal: $<%= ((item.price || 0) * (item.quantity || 1)).toFixed(2) %>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card shadow-sm sticky-top" style="top: 80px;">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Order Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <% 
+                        let subtotal = 0;
+                        cart.forEach(item => { subtotal += (item.price || 0) * (item.quantity || 1); });
+                        let shipping = subtotal > 500 ? 0 : 50;
+                        %>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal (<%= cart.length %> items):</span>
+                            <span>$<%= subtotal.toFixed(2) %></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Shipping:</span>
+                            <span><%= shipping === 0 ? '<span class="text-success">FREE</span>' : '$' + shipping.toFixed(2) %></span>
+                        </div>
+                        <% if (shipping > 0) { %>
+                            <small class="text-muted">Free shipping on orders over $500</small>
+                        <% } %>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <strong>Total:</strong>
+                            <strong class="text-warning h5">$<%= (subtotal + shipping).toFixed(2) %></strong>
+                        </div>
+                        <a href="/orders/checkout" class="btn btn-warning w-100 mb-2">
+                            <i class="fas fa-lock me-2"></i>Proceed to Checkout
+                        </a>
+                        <a href="/products/shop" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="text-center py-5">
+            <i class="fas fa-shopping-cart fa-5x text-muted mb-4"></i>
+            <h3>Your cart is empty</h3>
+            <p class="text-muted">Browse our products and add items to your cart</p>
+            <a href="/products/shop" class="btn btn-warning btn-lg mt-3">
+                <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+            </a>
+        </div>
+    <% } %>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Increase quantity
+    document.querySelectorAll('.increase-qty').forEach(function(btn) {
+        btn.addEventListener('click', async function() {
+            var productId = this.getAttribute('data-id');
+            var input = document.querySelector('.qty-input[data-id="' + productId + '"]');
+            var qty = parseInt(input.value) + 1;
+            await updateCart(productId, qty);
+        });
+    });
+
+    // Decrease quantity
+    document.querySelectorAll('.decrease-qty').forEach(function(btn) {
+        btn.addEventListener('click', async function() {
+            var productId = this.getAttribute('data-id');
+            var input = document.querySelector('.qty-input[data-id="' + productId + '"]');
+            var qty = parseInt(input.value) - 1;
+            if (qty >= 1) {
+                await updateCart(productId, qty);
+            }
+        });
+    });
+
+    // Remove item
+    document.querySelectorAll('.remove-item').forEach(function(btn) {
+        btn.addEventListener('click', async function() {
+            if (confirm('Remove this item from cart?')) {
+                var productId = this.getAttribute('data-id');
+                await removeFromCart(productId);
+            }
+        });
+    });
+
+    async function updateCart(productId, quantity) {
+        try {
+            var response = await fetch('/cart/update', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId: productId, quantity: quantity })
+            });
+            if (response.ok) {
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    async function removeFromCart(productId) {
+        try {
+            var response = await fetch('/cart/remove/' + productId, { method: 'DELETE' });
+            if (response.ok) {
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+});
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,73 @@
+<%- include('../partials/header') %>
+
+<% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i><%= error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<% } %>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Product</h5>
+            </div>
+            <div class="card-body">
+                <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Product Name *</label>
+                        <input type="text" class="form-control" id="name" name="name" required
+                               value="<%= typeof formData !== 'undefined' && formData ? formData.name : product.name %>">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description *</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required><%= typeof formData !== 'undefined' && formData ? formData.description : product.description %></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="price" class="form-label">Price *</label>
+                            <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" required
+                                   value="<%= typeof formData !== 'undefined' && formData ? formData.price : product.price %>">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="stock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="stock" name="stock" min="0"
+                                   value="<%= typeof formData !== 'undefined' && formData ? formData.stock : product.stock %>">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category *</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <% if (categories) { %>
+                                <% categories.forEach(category => { %>
+                                    <option value="<%= category._id %>" <%= product.category && product.category._id.toString() === category._id.toString() ? 'selected' : '' %>>
+                                        <%= category.name %>
+                                    </option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="images" class="form-label">Images (leave empty to keep current)</label>
+                        <input type="file" class="form-control" id="images" name="images" multiple accept="image/*">
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="isActive" name="isActive" <%= product.isActive ? 'checked' : '' %>>
+                        <label class="form-check-label" for="isActive">Active</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Update Product</button>
+                    <a href="/admin/products" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,83 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Edit Product</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Product Title</label>
+                            <input type="text" class="form-control" name="title" value="<%= product.title %>" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="description" rows="4" required><%= product.description %></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Price</label>
+                                <input type="number" step="0.01" class="form-control" name="price" value="<%= product.price %>" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Discount Price</label>
+                                <input type="number" step="0.01" class="form-control" name="discountPrice" value="<%= product.discountPrice %>">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Category</label>
+                                <select class="form-select" name="category" required>
+                                    <% categories.forEach(cat => { %>
+                                        <option value="<%= cat %>" <%= product.category === cat ? 'selected' : '' %>><%= cat %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Stock Quantity</label>
+                                <input type="number" class="form-control" name="stock" value="<%= product.stock %>" required>
+                            </div>
+                        </div>
+                        
+                        <% if (product.images && product.images.length > 0) { %>
+                            <div class="mb-3">
+                                <label class="form-label">Current Images</label>
+                                <div class="row">
+                                    <% product.images.forEach(image => { %>
+                                        <div class="col-md-3 mb-2">
+                                            <img src="/uploads/<%= image %>" class="img-fluid rounded" style="height: 100px; object-fit: cover;">
+                                        </div>
+                                    <% }) %>
+                                </div>
+                            </div>
+                        <% } %>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Add More Images</label>
+                            <input type="file" class="form-control" name="images" accept="image/*" multiple>
+                            <small class="text-muted">You can add more images (Max 5 total)</small>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" name="featured" id="featured" <%= product.featured ? 'checked' : '' %>>
+                            <label class="form-check-label" for="featured">Featured Product</label>
+                        </div>
+                        
+                        <div class="text-end">
+                            <a href="/admin/products" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-warning">Update Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

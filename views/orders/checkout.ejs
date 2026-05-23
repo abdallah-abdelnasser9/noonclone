@@ -1,0 +1,307 @@
+<%- include('../partials/header') %>
+
+<div class="container my-5">
+    <h1 class="mb-4"><i class="fas fa-credit-card me-2"></i>Checkout</h1>
+    
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i><%= error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+    
+    <div class="row">
+        <!-- Shipping & Payment -->
+        <div class="col-md-8">
+            <form action="/orders/place" method="POST" id="checkoutForm">
+                <!-- Shipping Address -->
+                <div class="card checkout-card mb-4">
+                    <div class="card-header checkout-card-header">
+                        <h5 class="mb-0"><i class="fas fa-truck me-2 text-warning"></i>Shipping Address</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="street" class="form-label">Street Address *</label>
+                            <input type="text" class="form-control checkout-input" id="street" name="shippingAddress[street]" 
+                                   value="<%= user && user.address ? user.address.street || '' : '' %>" 
+                                   placeholder="123 Main Street" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="city" class="form-label">City *</label>
+                                <input type="text" class="form-control checkout-input" id="city" name="shippingAddress[city]" 
+                                       value="<%= user && user.address ? user.address.city || '' : '' %>" 
+                                       placeholder="New York" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="state" class="form-label">State</label>
+                                <input type="text" class="form-control checkout-input" id="state" name="shippingAddress[state]" 
+                                       value="<%= user && user.address ? user.address.state || '' : '' %>" 
+                                       placeholder="NY">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="zipCode" class="form-label">Zip Code</label>
+                                <input type="text" class="form-control checkout-input" id="zipCode" name="shippingAddress[zipCode]" 
+                                       value="<%= user && user.address ? user.address.zipCode || '' : '' %>" 
+                                       placeholder="10001">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="country" class="form-label">Country</label>
+                                <input type="text" class="form-control checkout-input" id="country" name="shippingAddress[country]" 
+                                       value="<%= user && user.address ? user.address.country || '' : '' %>" 
+                                       placeholder="United States">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Payment Method -->
+                <div class="card checkout-card mb-4">
+                    <div class="card-header checkout-card-header">
+                        <h5 class="mb-0"><i class="fas fa-money-bill me-2 text-warning"></i>Payment Method</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="payment-option mb-3" onclick="document.getElementById('cod').checked = true">
+                            <div class="form-check p-3 border rounded-3">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cash_on_delivery" checked>
+                                <label class="form-check-label w-100" for="cod">
+                                    <div class="d-flex align-items-center">
+                                        <div class="payment-icon bg-success text-white rounded-circle p-2 me-3">
+                                            <i class="fas fa-hand-holding-usd"></i>
+                                        </div>
+                                        <div>
+                                            <strong>Cash on Delivery</strong>
+                                            <p class="text-muted mb-0 small">Pay when you receive your order</p>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-option mb-3" onclick="document.getElementById('card').checked = true">
+                            <div class="form-check p-3 border rounded-3">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="card" value="credit_card">
+                                <label class="form-check-label w-100" for="card">
+                                    <div class="d-flex align-items-center">
+                                        <div class="payment-icon bg-primary text-white rounded-circle p-2 me-3">
+                                            <i class="fas fa-credit-card"></i>
+                                        </div>
+                                        <div>
+                                            <strong>Credit Card</strong>
+                                            <p class="text-muted mb-0 small">Demo payment method</p>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-option" onclick="document.getElementById('paypal').checked = true">
+                            <div class="form-check p-3 border rounded-3">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="paypal" value="paypal">
+                                <label class="form-check-label w-100" for="paypal">
+                                    <div class="d-flex align-items-center">
+                                        <div class="payment-icon bg-info text-white rounded-circle p-2 me-3">
+                                            <i class="fab fa-paypal"></i>
+                                        </div>
+                                        <div>
+                                            <strong>PayPal</strong>
+                                            <p class="text-muted mb-0 small">Demo payment method</p>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-warning btn-lg w-100 py-3 fw-bold shadow-sm">
+                    <i class="fas fa-lock me-2"></i>Place Order
+                </button>
+            </form>
+        </div>
+        
+        <!-- Order Summary -->
+        <div class="col-md-4">
+            <div class="card checkout-card sticky-top" style="top: 80px;">
+                <div class="card-header checkout-card-header">
+                    <h5 class="mb-0"><i class="fas fa-receipt me-2 text-warning"></i>Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <% if (cartItems && cartItems.length > 0) { %>
+                        <% cartItems.forEach(item => { %>
+                            <div class="d-flex justify-content-between align-items-start mb-3 pb-3 border-bottom">
+                                <div class="me-2">
+                                    <small class="fw-bold d-block"><%= item.product ? item.product.name : 'Product' %></small>
+                                    <small class="text-muted">Qty: <%= item.quantity %> × $<%= item.price.toFixed(2) %></small>
+                                </div>
+                                <span class="fw-bold">$<%= (item.price * item.quantity).toFixed(2) %></span>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p class="text-muted text-center">No items in cart</p>
+                    <% } %>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Subtotal</span>
+                        <span>$<%= totalAmount.toFixed(2) %></span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Shipping</span>
+                        <% if (totalAmount > 500) { %>
+                            <span class="text-success fw-bold">FREE</span>
+                        <% } else { %>
+                            <span>$50.00</span>
+                        <% } %>
+                    </div>
+                    <% if (totalAmount <= 500) { %>
+                        <small class="text-muted d-block mb-2">Free shipping on orders over $500</small>
+                    <% } %>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong class="h5 mb-0">Total</strong>
+                        <strong class="text-warning h4 mb-0">$<%= (totalAmount > 500 ? totalAmount : totalAmount + 50).toFixed(2) %></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Checkout Card Styles */
+    .checkout-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        background-color: #ffffff;
+    }
+    
+    .checkout-card-header {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #ffc107;
+        padding: 15px 20px;
+    }
+    
+    .checkout-input {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+    }
+    
+    .checkout-input:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.15);
+        background-color: #ffffff;
+    }
+    
+    .payment-option {
+        cursor: pointer;
+    }
+    
+    .payment-option .form-check {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .payment-option:hover .form-check {
+        border-color: #ffc107 !important;
+        background-color: #fff9e6;
+    }
+    
+    .payment-option input[type="radio"]:checked + .form-check-label .form-check,
+    .payment-option:has(input:checked) .form-check {
+        border-color: #ffc107 !important;
+        background-color: #fff9e6;
+        box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.3);
+    }
+    
+    .payment-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    /* Dark Mode Styles */
+    .dark-mode .checkout-card {
+        background-color: #2d2d2d;
+        color: #ffffff;
+    }
+    
+    .dark-mode .checkout-card-header {
+        background-color: #1a1a1a;
+        border-bottom-color: #ffc107;
+    }
+    
+    .dark-mode .checkout-input {
+        background-color: #3d3d3d;
+        border-color: #555;
+        color: #ffffff;
+    }
+    
+    .dark-mode .checkout-input:focus {
+        background-color: #4a4a4a;
+        border-color: #ffc107;
+        color: #ffffff;
+    }
+    
+    .dark-mode .checkout-input::placeholder {
+        color: #999;
+    }
+    
+    .dark-mode .payment-option .form-check {
+        background-color: #2d2d2d;
+        border-color: #555;
+    }
+    
+    .dark-mode .payment-option:hover .form-check {
+        background-color: #3d3d3d;
+        border-color: #ffc107 !important;
+    }
+    
+    .dark-mode .payment-option:has(input:checked) .form-check {
+        background-color: #3d2d00;
+        border-color: #ffc107 !important;
+    }
+    
+    .dark-mode .text-muted {
+        color: #aaaaaa !important;
+    }
+    
+    .dark-mode .border-bottom {
+        border-bottom-color: #555 !important;
+    }
+    
+    .dark-mode .form-check-input:checked {
+        background-color: #ffc107;
+        border-color: #ffc107;
+    }
+    
+    .dark-mode .form-check-input:focus {
+        box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    }
+</style>
+
+<script>
+// Highlight selected payment option
+document.querySelectorAll('input[name="paymentMethod"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+        // Remove highlight from all
+        document.querySelectorAll('.payment-option .form-check').forEach(function(el) {
+            el.style.borderColor = '';
+        });
+        // Highlight selected
+        if (this.checked) {
+            this.closest('.form-check').style.borderColor = '#ffc107';
+        }
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

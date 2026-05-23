@@ -1,0 +1,132 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5 pt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">Login to Your Account</h2>
+                    
+                    <% if (error) { %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i><%= error %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <% } %>
+                    
+                    <% if (success) { %>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i><%= success %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <% } %>
+                    
+                    <form action="/login" method="POST">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   placeholder="Enter your email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   placeholder="Enter your password" required>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100 py-2 fw-bold">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </button>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <p class="text-center mb-3">
+                        Don't have an account? <a href="/register" class="text-warning fw-bold">Register here</a>
+                    </p>
+                    
+                    <!-- Demo Credentials Box -->
+                    <div class="card bg-light border-2">
+                        <div class="card-body">
+                            <h6 class="text-center mb-3">
+                                <i class="fas fa-key me-2"></i>Demo Credentials
+                            </h6>
+                            
+                            <div class="row">
+                                <div class="col-6 border-end">
+                                    <div class="text-center">
+                                        <span class="badge bg-danger mb-2">Admin</span>
+                                        <div class="small">
+                                            <div class="mb-1">
+                                                <i class="fas fa-envelope text-muted"></i><br>
+                                                <strong>admin@noonclone.com</strong>
+                                            </div>
+                                            <div>
+                                                <i class="fas fa-lock text-muted"></i><br>
+                                                <strong>Admin@123</strong>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-danger btn-sm mt-2" 
+                                                onclick="fillDemo('admin')">
+                                            <i class="fas fa-user-shield me-1"></i>Fill Admin
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <span class="badge bg-primary mb-2">Customer</span>
+                                        <div class="small">
+                                            <div class="mb-1">
+                                                <i class="fas fa-envelope text-muted"></i><br>
+                                                <strong>customer@noonclone.com</strong>
+                                            </div>
+                                            <div>
+                                                <i class="fas fa-lock text-muted"></i><br>
+                                                <strong>user@123</strong>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-primary btn-sm mt-2" 
+                                                onclick="fillDemo('customer')">
+                                            <i class="fas fa-user me-1"></i>Fill Customer
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Use admin account to access the admin dashboard
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function fillDemo(type) {
+    if (type === 'admin') {
+        document.getElementById('email').value = 'admin@noonclone.com';
+        document.getElementById('password').value = 'Admin@123';
+    } else {
+        document.getElementById('email').value = 'customer@noonclone.com';
+        document.getElementById('password').value = 'Admin@123';
+    }
+    // Highlight the button
+    event.target.classList.add('active');
+    setTimeout(() => event.target.classList.remove('active'), 200);
+}
+</script>
+
+<style>
+.border-2 {
+    border-width: 2px !important;
+}
+.btn.active {
+    transform: scale(0.95);
+}
+</style>
+
+<%- include('../partials/footer') %>

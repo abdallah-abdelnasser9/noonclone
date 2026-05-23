@@ -1,0 +1,209 @@
+<%- include('../partials/header') %>
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Product Images -->
+        <div class="col-md-6">
+            <img src="/uploads/<%= product.images && product.images[0] ? product.images[0] : 'default-product.jpg' %>" 
+                 class="img-fluid rounded shadow-sm mb-3" 
+                 alt="<%= product.title %>"
+                 style="max-height: 400px; width: 100%; object-fit: contain;">
+            <div class="row">
+                <% if (product.images && product.images.length > 1) { %>
+                    <% product.images.forEach(image => { %>
+                        <div class="col-3">
+                            <img src="/uploads/<%= image %>" class="img-fluid rounded cursor-pointer" style="height: 80px; object-fit: cover;">
+                        </div>
+                    <% }) %>
+                <% } %>
+            </div>
+        </div>
+        
+        <!-- Product Info -->
+        <div class="col-md-6">
+            <h1><%= product.title %></h1>
+            <div class="mb-3">
+                <span class="text-warning">
+                    <% for(let i = 1; i <= 5; i++) { %>
+                        <i class="fas fa-star <%= i <= Math.round(product.ratings) ? 'text-warning' : 'text-muted' %>"></i>
+                    <% } %>
+                </span>
+                <span class="text-muted">(<%= product.reviews.length %> reviews)</span>
+            </div>
+            
+            <div class="mb-3">
+                <% if (product.discountPrice && product.discountPrice > 0) { %>
+                    <h2 class="text-danger">$<%= product.discountPrice %></h2>
+                    <span class="text-muted text-decoration-line-through">$<%= product.price %></span>
+                <% } else { %>
+                    <h2 class="text-primary">$<%= product.price %></h2>
+                <% } %>
+            </div>
+            
+            <p><strong>Category:</strong> <%= product.category %></p>
+            <p><strong>Stock:</strong> <%= product.stock > 0 ? product.stock + ' units available' : 'Out of stock' %></p>
+            
+            <div class="mb-4">
+                <h5>Description</h5>
+                <p><%= product.description %></p>
+            </div>
+            
+            <div class="d-flex gap-2">
+                <button class="btn btn-warning btn-lg flex-grow-1 add-to-cart" data-id="<%= product._id %>" <%= product.stock === 0 ? 'disabled' : '' %>>
+                    <i class="fas fa-cart-plus"></i> Add to Cart
+                </button>
+                <button class="btn btn-outline-danger btn-lg add-to-wishlist" data-id="<%= product._id %>">
+                    <i class="fas fa-heart"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reviews Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3>Customer Reviews</h3>
+            <hr>
+            
+            <% if (user && user.role === 'customer') { %>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5>Write a Review</h5>
+                        <form id="reviewForm">
+                            <div class="mb-3">
+                                <label class="form-label">Rating</label>
+                                <div class="rating-input">
+                                    <i class="far fa-star" data-value="1"></i>
+                                    <i class="far fa-star" data-value="2"></i>
+                                    <i class="far fa-star" data-value="3"></i>
+                                    <i class="far fa-star" data-value="4"></i>
+                                    <i class="far fa-star" data-value="5"></i>
+                                </div>
+                                <input type="hidden" id="ratingValue" name="rating">
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control" id="comment" rows="3" placeholder="Write your review..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-warning">Submit Review</button>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
+            
+            <% if (product.reviews && product.reviews.length > 0) { %>
+                <% product.reviews.forEach(review => { %>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="card-subtitle mb-2"><%= review.userName %></h6>
+                                <div class="text-warning">
+                                    <% for(let i = 1; i <= 5; i++) { %>
+                                        <i class="fas fa-star <%= i <= review.rating ? 'text-warning' : 'text-muted' %> fa-sm"></i>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <p class="card-text"><%= review.comment %></p>
+                            <small class="text-muted"><%= new Date(review.createdAt).toLocaleDateString() %></small>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p class="text-muted">No reviews yet. Be the first to review!</p>
+            <% } %>
+        </div>
+    </div>
+    
+    <!-- Related Products -->
+    <% if (relatedProducts && relatedProducts.length > 0) { %>
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3>Related Products</h3>
+                <div class="row">
+                    <% relatedProducts.forEach(product => { %>
+                        <div class="col-md-3 col-sm-6 mb-4">
+                            <div class="card product-card h-100 shadow-sm">
+                                <img src="/uploads/<%= product.images && product.images[0] ? product.images[0] : 'default-product.jpg' %>" 
+                                     class="card-img-top" 
+                                     alt="<%= product.title %>">
+                                <div class="card-body">
+                                    <h6><%= product.title %></h6>
+                                    <strong>$<%= product.discountPrice || product.price %></strong>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <a href="/products/<%= product._id %>" class="btn btn-outline-dark w-100 btn-sm">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<script>
+document.getElementById('reviewForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const rating = document.getElementById('ratingValue').value;
+    const comment = document.getElementById('comment').value;
+    
+    if (!rating || !comment) {
+        alert('Please provide both rating and comment');
+        return;
+    }
+    
+    const response = await fetch(`/products/<%= product._id %>/review`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating, comment })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+        location.reload();
+    } else {
+        alert(data.message);
+    }
+});
+
+// Star rating
+const stars = document.querySelectorAll('.rating-input i');
+stars.forEach(star => {
+    star.addEventListener('click', function() {
+        const value = this.dataset.value;
+        document.getElementById('ratingValue').value = value;
+        stars.forEach((s, i) => {
+            if (i < value) {
+                s.classList.remove('far');
+                s.classList.add('fas');
+            } else {
+                s.classList.remove('fas');
+                s.classList.add('far');
+            }
+        });
+    });
+});
+document.querySelector('.add-to-wishlist')?.addEventListener('click', async function () {
+
+    const productId = this.dataset.id;
+
+    try {
+        const response = await fetch(`/user/wishlist/add/${productId}`, {
+            method: 'POST'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('Added to wishlist');
+        } else {
+            alert(data.message);
+        }
+
+    } catch (error) {
+        alert('Error adding to wishlist');
+    }
+});
+</script>
+
+<%- include('../partials/footer') %>

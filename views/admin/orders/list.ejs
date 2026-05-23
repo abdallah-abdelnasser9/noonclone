@@ -1,0 +1,92 @@
+<%- include('../partials/header') %>
+
+<% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i><%= success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<% } %>
+
+<% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i><%= error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<% } %>
+
+<div class="card">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Orders</h5>
+    </div>
+    <div class="card-body">
+        <!-- Filter -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <form action="/admin/orders" method="GET">
+                    <select name="status" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Statuses</option>
+                        <option value="pending" <%= status === 'pending' ? 'selected' : '' %>>Pending</option>
+                        <option value="processing" <%= status === 'processing' ? 'selected' : '' %>>Processing</option>
+                        <option value="shipped" <%= status === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                        <option value="delivered" <%= status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                        <option value="cancelled" <%= status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (orders && orders.length > 0) { %>
+                        <% orders.forEach(order => { %>
+                            <tr>
+                                <td>#<%= order._id.toString().slice(-8) %></td>
+                                <td><%= order.user ? order.user.name : 'N/A' %></td>
+                                <td>$<%= (order.totalAmount || 0).toLocaleString() %></td>
+                                <td>
+                                    <% 
+                                    let statusColor = 'warning';
+                                    if (order.status === 'processing') statusColor = 'info';
+                                    else if (order.status === 'shipped') statusColor = 'primary';
+                                    else if (order.status === 'delivered') statusColor = 'success';
+                                    else if (order.status === 'cancelled') statusColor = 'danger';
+                                    %>
+                                    <span class="badge bg-<%= statusColor %>"><%= order.status %></span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-<%= order.paymentStatus === 'completed' ? 'success' : 'warning' %>">
+                                        <%= order.paymentStatus %>
+                                    </span>
+                                </td>
+                                <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                                <td>
+                                    <a href="/admin/orders/<%= order._id %>" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="7" class="text-center py-4">No orders found</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
